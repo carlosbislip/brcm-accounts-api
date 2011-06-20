@@ -49,6 +49,22 @@ public enum IntervalType {
 	},
 	
 	/**
+	 * Two weeks.
+	 *
+	 */
+	BIWEEKLY {
+		@Override
+		public Period getPeriod() {
+			return TWO_WEEKS;
+		}
+
+		@Override
+		public DateTime getIntervalStart(DateTime dateTime) {
+				return beginningOfPayPeriod(beginningOfDay(dateTime));
+		}
+	},
+
+	/**
 	 * A month.
 	 * 
 	 * <p><strong>N.B.:</strong> This is not strictly 30 days -- a month from
@@ -65,7 +81,7 @@ public enum IntervalType {
 		
 		@Override
 		protected DateTime getIntervalStart(DateTime dateTime) {
-			return beginningOfMonth(beginningOfDay(dateTime));
+			return dateTime.withDayOfWeek(1);
 		}
 	},
 	
@@ -111,6 +127,7 @@ public enum IntervalType {
 	// constants used as instance periods
 	private static final Period ONE_DAY = Period.days(1);
 	private static final Period ONE_WEEK = Period.weeks(1);
+	private static final Period TWO_WEEKS = Period.days(14);
 	private static final Period ONE_MONTH = Period.months(1);
 	private static final Period THREE_MONTHS = Period.months(3);
 	private static final Period ONE_YEAR = Period.years(1);
@@ -203,7 +220,7 @@ public enum IntervalType {
 	 * @param dateTime a day
 	 * @return the beginning of the day
 	 */
-	protected DateTime beginningOfDay(DateTime dateTime) {
+	public DateTime beginningOfDay(DateTime dateTime) {
 		return dateTime.withTime(0, 0, 0, 0);
 	}
 	
@@ -217,6 +234,21 @@ public enum IntervalType {
 		return dateTime.withDayOfWeek(1);
 	}
 	
+	/**
+	 * Returns the beginning of a payperiod.
+	 * 
+	 * @param dateTime a day
+	 * @return the beginning of the payperiod
+	 */
+	public DateTime beginningOfPayPeriod(DateTime dateTime) {
+			if (dateTime.getWeekOfWeekyear() % 2 != 0) {
+				dateTime = dateTime.withDayOfWeek(1);
+			} else {
+				dateTime = dateTime.withDayOfWeek(1).minusWeeks(1);
+			}
+		return dateTime.minusDays(1);
+	}
+
 	/**
 	 * Returns the beginning of a month.
 	 * 
