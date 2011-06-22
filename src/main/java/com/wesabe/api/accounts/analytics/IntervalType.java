@@ -54,12 +54,12 @@ public enum IntervalType {
 	 */
 	BIWEEKLY {
 		@Override
-		public Period getPeriod() {
+		protected Period getPeriod() {
 			return TWO_WEEKS;
 		}
 
 		@Override
-		public DateTime getIntervalStart(DateTime dateTime) {
+		protected DateTime getIntervalStart(DateTime dateTime) {
 				return beginningOfPayPeriod(beginningOfDay(dateTime));
 		}
 	},
@@ -81,7 +81,7 @@ public enum IntervalType {
 		
 		@Override
 		protected DateTime getIntervalStart(DateTime dateTime) {
-			return dateTime.withDayOfWeek(1);
+			return beginningOfMonth(beginningOfDay(dateTime));
 		}
 	},
 	
@@ -240,7 +240,7 @@ public enum IntervalType {
 	 * @param dateTime a day
 	 * @return the beginning of the payperiod
 	 */
-	public DateTime beginningOfPayPeriod(DateTime dateTime) {
+	protected DateTime beginningOfPayPeriod(DateTime dateTime) {
 			if (dateTime.getWeekOfWeekyear() % 2 != 0) {
 				dateTime = dateTime.withDayOfWeek(1);
 			} else {
